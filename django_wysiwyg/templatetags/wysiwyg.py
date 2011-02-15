@@ -36,7 +36,7 @@ def wysiwyg_setup(protocol="http"):
 
 
 @register.simple_tag
-def wysiwyg_editor(field_id, editor_name=None):
+def wysiwyg_editor(field_id, editor_name=None, editor_type=None):
     """
     Turn the textarea #field_id into a rich editor. If you do not specify the
     JavaScript name of the editor, it will be derived from the field_id.
@@ -46,14 +46,17 @@ def wysiwyg_editor(field_id, editor_name=None):
     this in case you have a complex JS ctxironment.
     """
 
-    if not editor_name:
+    if not editor_name and editor_name != "None":
         editor_name = "%s_editor" % field_id
 
     ctx = {
         'field_id':     field_id,
         'editor_name':  editor_name
     }
-    ctx.update(get_settings())
+    settings = get_settings()
+    if editor_type:
+		settings["DJANGO_WYSIWYG_FLAVOR"] = editor_type
+    ctx.update(settings)
 
     return render_to_string(
         "django_wysiwyg/%s/editor_instance.html" % ctx['DJANGO_WYSIWYG_FLAVOR'],
